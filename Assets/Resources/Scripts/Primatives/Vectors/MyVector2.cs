@@ -88,9 +88,13 @@ public class MyVector2 : Vector
         }
         throw new Exception();
     }
-    internal float dot(MyVector2 other)
+    internal override float dot(Vector other)
     {
-        return Vector2.Dot(vector, other.vector);
+        if (other is MyVector2 other2)
+        {
+            return Vector2.Dot(vector, other2.vector);
+        }
+        throw new Exception();
     }
 
     public override float mag()

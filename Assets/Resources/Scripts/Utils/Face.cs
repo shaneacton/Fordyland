@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-class Face
+public class Face
 {
-    public List<int> orderedIndicies;
     public Vector normal;
     public RealLine otherRealLine;
 
     public HashSet<IndexLine> lines;
+
+    public Walk walk;
+
 
     public Face(Vector normal, RealLine otherLine)
     {
@@ -58,33 +61,14 @@ class Face
 
     public override string ToString()
     {
-        String ret = "Face (norm = " + normal + " indicies: (";
-        for (int i = 0; i < orderedIndicies.Count; i++)
-        {
-            ret += orderedIndicies[i] + ",";
-        }
-        return ret + ")) ";
-    }
-
-    internal HashSet<IndexTriangle> getTriangles()
-    {
-        int anchor = getAnIndex();
-
-
-        HashSet<IndexTriangle> triangles = new HashSet<IndexTriangle>();
-
-        for (int i = 1; i < orderedIndicies.Count - 1; i++)
-        {
-            int second = orderedIndicies[i];
-            int third = orderedIndicies[i + 1];
-            IndexTriangle tri = new IndexTriangle(anchor, second, third);
-            triangles.Add(tri);
-        }
-        return triangles;
+        return "Face {norm = " + normal + ", " + walk + "}";
     }
 
     private int getAnIndex()
     {
+        if (lines == null) {
+            return walk.vertices[0];
+        }
         foreach (IndexLine line in lines)
         {
             return line[0];
@@ -92,7 +76,7 @@ class Face
         throw new Exception();
     }
 
-    private int getASafeIndex(Dictionary<int, HashSet<LinePoint>> lineIntersections)
+    public int getASafeIndex(Dictionary<int, HashSet<LinePoint>> lineIntersections)
     {//returns an arbitrary vert which has exactly 2 lines intersecting it
         foreach (IndexLine line in lines)
         {
@@ -113,171 +97,13 @@ class Face
                 else {
                     Debug.LogWarning("intersections at vert " + vertId + " = " + lineIntersections[vertId].Count + " line: "  + line);
                     foreach (LinePoint intersection in lineIntersections[vertId]) {
-                        Debug.LogWarning("intersection: " + intersection);
+                        if (!lines.Contains(intersection.line)) { continue; }
+                        //Debug.LogWarning("intersection: " + intersection);
                     }
                 }
             }
         }
         throw new Exception();
-    }
-
-    internal void calculateOrderedVerts(Shape shape, Dictionary<int, HashSet<LinePoint>> lineIntersections, bool debug = false)
-    {//perform convex 
-
-        //if (debug)
-        //{
-        //    foreach (IndexLine line in lines)
-        //    {
-        //        RealLine realLine = line.getRealLine(shape);
-        //        Vector3 a = ((MyVector3)realLine[0]).vector;
-        //        Vector3 b = ((MyVector3)realLine[1]).vector;
-
-        //        Debug.DrawLine(a, b);
-        //        Vector3 mid = (a + b) * 0.5f;
-        //        //Debug.DrawLine(mid, mid + ((MyVector3)normal).vector);
-
-        //        for (int side = 0; side < 2; side++)
-        //        {
-        //            HashSet<IndexLine> connectedLines = new HashSet<IndexLine>();
-        //            int vertId = line[side];
-        //            //Debug.Log("number of lines at " + vertId + " = " + lineIntersections[vertId].Count);
-        //            foreach (LinePoint lineP in lineIntersections[vertId]) {
-        //                if (lines.Contains(lineP.line)) {
-        //                    connectedLines.Add(lineP.line);
-        //                }
-        //            }
-        //            if (connectedLines.Count != 2) {
-        //                Debug.LogError("strage number of face lines connected at vert " + vertId + " num: " + connectedLines.Count + " total lines at intersect: " + lineIntersections[vertId].Count);
-        //                foreach (LinePoint linePoint in lineIntersections[vertId])
-        //                {
-        //                    Debug.Log("line at strange intersect: " + linePoint);
-        //                }
-        //                Vector3 troublePoint = ((MyVector3)realLine[0]).vector;
-        //                Debug.DrawLine(troublePoint, troublePoint + ((MyVector3)normal).vector);
-        //            }
-        //        }
-        //    }
-        //}
-        orderedIndicies = new List<int>();
-        int start = getASafeIndex(lineIntersections);
-        if (debug)
-        {
-            Debug.Log(shape + "," + this + " starting on " + start);
-        }
-        traverseLines(start, lineIntersections, shape, debug: debug);
-        if (orderedIndicies.Count != lines.Count) {
-            throw new Exception();
-        }
-    }
-
-    public int getSecondLastPoint() {
-        return orderedIndicies[orderedIndicies.Count - 2];
-    }
-
-    private void traverseLines(int vertId, Dictionary<int, HashSet<LinePoint>> lineIntersections, Shape shape, bool debug = false)
-    {
-        if (orderedIndicies.Count > 0 && orderedIndicies[0] == vertId)
-        {
-            //have returned to starting point. work is done
-            if (debug)
-            {
-                Debug.Log(this + " finished trversing");
-            }
-            return;
-        }
-        if (orderedIndicies.Contains(vertId))
-        {
-            if (debug)
-            {
-                foreach (LinePoint linePoint in lineIntersections[vertId])
-                {
-                    Debug.LogError(this + " line point connected to error: " + linePoint);
-                }
-            }
-            throw new Exception(this + " trying to add duplicte vert " + vertId + " to " + this + " debug: " + debug);
-        }
-
-        orderedIndicies.Add(vertId);
-        if (debug)
-        {
-            Debug.Log(this + " traversing from: " + vertId);
-        }
-        HashSet<LinePoint> linePointsIntersectionsOnFace = new HashSet<LinePoint>();
-        foreach (LinePoint linePoint in lineIntersections[vertId])
-        {
-            if (lines.Contains(linePoint.line))
-            {
-                linePointsIntersectionsOnFace.Add(linePoint);
-            }
-        }
-        if (linePointsIntersectionsOnFace.Count == 3) {
-            //check if both are valid
-            foreach (LinePoint linePoint in lineIntersections[vertId])
-            {
-                int outGoingVert = linePoint.getOtherPoint();
-                if (outGoingVert == getSecondLastPoint()) { continue; }//returning line
-                //the next two lines are the fork
-                //if(lineIntersections[outGoingVert].Contains(lin))
-                Debug.LogError("num intersections at end of fork " + linePoint + " =" + linePoint.getNumIntersectionsAtOtherPoint(lineIntersections));
-            }
-        }
-        if (linePointsIntersectionsOnFace.Count != 2)
-        {
-            foreach (LinePoint linePoint in lineIntersections[vertId])
-            {
-                RealLine rl = linePoint.line.getRealLine(shape);
-                Vector newNormal = rl.cross(otherRealLine).getNormalised();
-
-                
-                if (debug)
-                {
-                    Debug.LogError(linePoint + " is on face: " + isLineInFace(linePoint, shape) + "\nreal: " + rl + "\toriginal: " + otherRealLine +
-                   "\nline norm: " + newNormal + "face norm: " + normal + "\nnorms par: " + newNormal.isParallelTo(normal) + " line par with orig " + otherRealLine.isParallelTo(rl));
-
-                    RealLine realLine = linePoint.line.getRealLine(shape);
-                    Vector3 a = ((MyVector3)realLine[0]).vector;
-                    Vector3 b = ((MyVector3)realLine[1]).vector;
-                    //Debug.DrawLine(a, b);
-                    //Visualiser.visualiseLines(shape);
-                }
-            }
-            throw new Exception("strange number of linePoints on the face at vert " + vertId + " = " + linePointsIntersectionsOnFace.Count + " total lines at intersection: " + lineIntersections[vertId].Count);
-        }
-        int movedToVert = -1;
-        int previousVertId = -1;
-
-        foreach (LinePoint linePoint in linePointsIntersectionsOnFace)
-        {
-            if (orderedIndicies.Count == 1)
-            {
-                //has just begun, chose starting direction arbitrarily
-                int nextVert = linePoint.getOtherPoint();
-                if (debug)
-                {
-                    Debug.Log(this + " setting trv dir with " + linePoint + " moving to vert " + nextVert);
-                }
-                traverseLines(nextVert, lineIntersections, shape, debug: debug);
-                return;
-            }
-            //haas picked a direction. ensure that the next point is in tht dir
-            if (movedToVert == -1)
-            {
-                previousVertId = orderedIndicies[orderedIndicies.Count - 2];
-            }
-            int nextVertcandidaate = linePoint.getOtherPoint();
-            if (nextVertcandidaate != previousVertId)
-            {
-                //not going backwards   
-                if (movedToVert != -1) { throw new Exception("already moved from " + vertId + " to " + movedToVert + " now trying to move to" + nextVertcandidaate + " previous: " + previousVertId); }
-                movedToVert = nextVertcandidaate;
-                if (debug)
-                {
-                    Debug.Log(this + " traversing on " + linePoint + " moving to vert " + nextVertcandidaate);
-                }
-                traverseLines(nextVertcandidaate, lineIntersections, shape, debug: debug);
-                return;
-            }
-        }
     }
 
     internal void findLines(IndexLine nextLine, Dictionary<int, HashSet<LinePoint>> lineIntersections, Shape shape, int remainingRecurses = 20, bool debug = false)
@@ -315,6 +141,46 @@ class Face
         }
     }
 
+    internal void fillLines()
+    {
+        //if this face is open (not a closed cycle) - fill it in by connecting the dead ends
+        Dictionary<int, int> vertCount = new Dictionary<int, int>(); // maps each vert to the number of lines it is a part of
+        foreach (IndexLine line in lines)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                int vert = line[i];
+                if (!vertCount.ContainsKey(vert))
+                {
+                    vertCount.Add(vert, 1);
+                }
+                else {
+                    vertCount[vert]++;
+                }
+            }
+        }
+
+        HashSet<int> deadEndVerts = new HashSet<int>();
+        foreach (int vert in vertCount.Keys)
+        {
+            if (vertCount[vert] < 2)
+            {
+                deadEndVerts.Add(vert);
+            }
+        }
+        if (deadEndVerts.Count % 2 != 0) {
+            throw new Exception();
+        }
+        if (deadEndVerts.Count > 2) {
+            throw new Exception();
+        }
+        if (deadEndVerts.Count == 2) {
+            int[] deadEnds = deadEndVerts.ToArray();
+            add(new IndexLine(deadEnds[0], deadEnds[1]));
+        }
+
+    }
+
     bool isLineInFace(LinePoint candidateLine, Shape shape)
     {
         RealLine candidateRealLine = candidateLine.line.getRealLine(shape);
@@ -325,5 +191,27 @@ class Face
     internal bool contains(IndexLine line1, IndexLine line2)
     {
         return lines.Contains(line1) && lines.Contains(line2);
+    }
+
+    public Vector getU()
+    {//returns 1 of the two perp axis which define the face plane
+        return otherRealLine.getDiff().getNormalised();
+    }
+
+    public Vector getV(Shape shape)
+    {//returns the other of the two perp axis which define the face plane
+        if (shape.getVertexAt(0).getNumDims() == 2)
+        {
+            //the shape this face is on is 2d
+            MyVector2 u = (MyVector2)otherRealLine.getDiff();
+            return new MyVector2(-u.y, u.x).getNormalised();//prep to u
+        }
+        else if (shape.getVertexAt(0).getNumDims() == 3)
+        {
+            //3d shape
+            MyVector3 u = (MyVector3)otherRealLine.getDiff();
+            return u.cross((MyVector3)normal).getNormalised();
+        }
+        throw new Exception();
     }
 }

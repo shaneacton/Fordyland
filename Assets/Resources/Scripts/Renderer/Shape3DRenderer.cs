@@ -43,10 +43,10 @@ public class Shape3DRenderer : MonoBehaviour
     }
 
     public void moveToPysicalPosition(Vector3 newPhysicalPosition, bool force = false, bool debug = false) {
-        //if (debug)
-        //{
-        //    Debug.Log("moving to physical position: " + newPhysicalPosition + " last pos: " + lastPhysicalPosition);
-        //}
+        if (debug)
+        {
+            Debug.Log("moving to physical position: " + newPhysicalPosition + " last pos: " + lastPhysicalPosition);
+        }
         newPhysicalPosition = newPhysicalPosition * 1;//deep copy
         resetLastPhysicalposition(newPhysicalPosition);
         if (force) {

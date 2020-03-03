@@ -65,11 +65,12 @@ public class Entity : MonoBehaviour
         GameObject rendererObject = Instantiate<GameObject>(SceneRenderer.object4DRendererPrefab);
         rendererObject.transform.position = Vector3.zero;
         Shape4DRenderer renderer = rendererObject.GetComponent<Shape4DRenderer>();
-        SceneRenderer.registerEntity(this);
         renderer.setShape(shape4, positionType, this);
         shape3 = renderer.shape3Rend;
         shape2 = renderer.shape2Rend;
         this.shape4 = renderer;
+        SceneRenderer.registerEntity(this);
+
 
         shape3.meshRenderer.material = material;
         shape2.meshRenderer.material = material;
@@ -106,7 +107,7 @@ public class Entity : MonoBehaviour
         //Debug.Log(gameObject + " setting 3d pos of " + shape3.gameObject + " to: " + position.dropQ().vector + " old pos: " + shape3.lastPhysicalPosition + " rep pos: " + position);
         //if (positionType == PositionType.PLAYER_RELATIVE) {
         shape2.moveToPysicalPosition(new Vector3(position.q, position.y, 0), force: force, debug: false);
-        shape3.moveToPysicalPosition(position.dropQ().vector, force: force, debug: true);
+        shape3.moveToPysicalPosition(position.dropQ().vector, force: force, debug: false);
         //}
 
     }

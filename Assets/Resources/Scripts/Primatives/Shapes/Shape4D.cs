@@ -46,12 +46,12 @@ public class Shape4D : Shape
     public Shape2D getShapeAtXZ(float x, float z)
     {
         Shape3D shape3 = getShape3DAtDimVal(2, z);//shape is made of triangles with points in the space (x,y,q)
-        //Visualiser.visualiseLines(shape3);
+        Visualiser.visualiseLines(shape3);
         Triangulator.triangulateShape(shape3, debug: false);
         //Visualiser.visualiseTriangles(shape3);
         Shape2D shape2 = shape3.getShapeAtDimVal(0, x);//shape made of tris in the sapce (y,q)
         shape2.swizzle();//shape now in space (q,y)
-        //Visualiser.visualiseLines(shape2);
+        Visualiser.visualiseLines(shape2);
         return shape2;
     }
 

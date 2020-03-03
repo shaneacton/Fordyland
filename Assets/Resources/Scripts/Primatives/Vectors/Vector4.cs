@@ -183,4 +183,9 @@ public class Vector4 : Vector
     {
         throw new NotImplementedException();
     }
+
+    internal override float dot(Vector u)
+    {
+        throw new NotImplementedException();
+    }
 }

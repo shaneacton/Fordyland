@@ -268,11 +268,11 @@ public class Visualiser : MonoBehaviour
 
     private static void visualiseFace3(Face face, Shape3D shape3)
     {
-        int numVerts = face.orderedIndicies.Count;
-        for (int i = 0; i < numVerts; i++)
+        Walk faceWalk = face.walk;
+        for (int i = 0; i < faceWalk.vertCount; i++)
         {
-            int vert = face.orderedIndicies[i];
-            int nextVert = face.orderedIndicies[(i + 1) % numVerts];
+            int vert = faceWalk.vertices[i];
+            int nextVert = faceWalk.vertices[(i + 1) % faceWalk.vertCount];
             IndexLine iLine = new IndexLine(vert, nextVert);
             Line3 rLine = iLine.getLine3(shape3);
             Vector3 a = rLine[0].vector;

@@ -81,4 +81,38 @@ public abstract class RealLine
         }
         return true;
     }
+
+    public bool doesVectorIntersectLine(Vector origin, Vector A) {
+        if (A.isParallelTo(getDiff())) {
+            //lines will never meet. 
+            bool originOfVecOnLine = doesLineContainPoint(origin);
+            if (originOfVecOnLine) {
+                Debug.LogWarning("intersecting vec ("+A+") and real line ("+getDiff()+"), but lines parallel and origin of vec ("+origin+") on line");
+            }
+            return originOfVecOnLine;
+        }
+
+        float beta = getVectorIntersectionBeta(origin, A);
+        //if beta < 0 then the intersection is behind start
+        //if beta > 0 then the intersection is ahead of the end
+        return beta >= 0 && beta <= 1;
+    }
+
+    internal Vector getCenterPoint()
+    {
+        return (start.plus(end)).times(0.5f);
+    }
+
+    float getVectorIntersectionBeta(Vector origin, Vector A) {
+        /*
+         * used to find the intersection between this realLine and the vec A originating at origin
+         * beta is the coefficient for this.diff at the intersection
+         */
+        Vector B = getDiff();
+        Vector C = this.start - origin;
+        Vector D = A.times(B[0]).minus(B.times(A[0]));
+        Vector E = C.times(A[0]) - A.times(B[0] - A[0]);
+        float beta = E[1] / D[1];
+        return beta;
+    }
 }

@@ -69,9 +69,18 @@ public class MyVector3 : Vector
         }
     }
 
-    internal float dot(MyVector3 other)
+    internal MyVector3 cross(MyVector3 other)
     {
-        return Vector3.Dot(vector, other.vector);
+        return new MyVector3(Vector3.Cross(other.vector, vector));
+    }
+
+    internal override float dot(Vector other)
+    {
+        if (other is MyVector3 other3)
+        {
+            return Vector3.Dot(vector, other3.vector);
+        }
+        throw new Exception();
     }
 
     public static MyVector3 operator - (MyVector3 a, Vector b)

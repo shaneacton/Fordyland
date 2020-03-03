@@ -10,13 +10,23 @@ public abstract class ShapeOperator
 
     protected void findLineIntersections(bool debug = false)
     {
-        Dictionary<int, HashSet<LinePoint>> intersections = new Dictionary<int, HashSet<LinePoint>>();
         lineIntersections = new Dictionary<int, HashSet<LinePoint>>();
+        HashSet<IndexLine> shapeLines = shape.getLines();
+        Dictionary<int, HashSet<LinePoint>> intersections = findIntersectionsFromLines(shape.getLines());
+        //Debug.Log("total number of intersection points for " + shape+": " + intersections.Count);
+        lineIntersections = widdleLineIntersections(intersections);
+        //Debug.Log("number of valid intersection pointsfor " + shape + ": " + lineIntersections.Count);
+    }
 
-        foreach (IndexLine line in shape.getLines())
+
+
+    public static Dictionary<int, HashSet<LinePoint>> findIntersectionsFromLines(HashSet<IndexLine> lines)
+    {
+        Dictionary<int, HashSet<LinePoint>> intersections = new Dictionary<int, HashSet<LinePoint>>();
+        foreach (IndexLine line in lines)
         {
             for (int i = 0; i < 2; i++)
-            {
+            {//start and finish of each line
                 int vertId = line[i];
                 if (!intersections.ContainsKey(vertId))
                 {
@@ -27,10 +37,7 @@ public abstract class ShapeOperator
                 //Debug.Log("adding new line to vert intersect: " + (new LinePoint(line, i)));
             }
         }
-
-        //Debug.Log("total number of intersection points for " + shape+": " + intersections.Count);
-        lineIntersections = widdleLineIntersections(intersections);
-        //Debug.Log("number of valid intersection pointsfor " + shape + ": " + lineIntersections.Count);
+        return intersections;
     }
 
     private Dictionary<int, HashSet<LinePoint>> widdleLineIntersections(Dictionary<int, HashSet<LinePoint>> intersections, int remainingRecurses = 50)

@@ -62,8 +62,8 @@ public class ShapeSimplifier : ShapeOperator
                     continue;
                     //throw new Exception("lines in intersections " + intersection + " not present in shape - " + oldLines[1]);
                 }
-                Vector line1 = oldRealLines[0].getDiff().getRounded(Vector.normalEqualityTolerance);
-                Vector line2 = oldRealLines[1].getDiff().getRounded(Vector.normalEqualityTolerance);
+                //Vector line1 = oldRealLines[0].getDiff().getRounded(Vector.normalEqualityTolerance);
+                //Vector line2 = oldRealLines[1].getDiff().getRounded(Vector.normalEqualityTolerance);
 
                 bool isPar = oldRealLines[0].isParallelTo(oldRealLines[1], tolerance: 0.9f);
                 //bool isPar = line1.isParallelTo(line2);//todo test rounded v non
@@ -74,13 +74,13 @@ public class ShapeSimplifier : ShapeOperator
                 }
                 //either a connects to b or a is contained in b 
                 IndexLine newLine;
-                if (oldRealLines[0].doesLineContainPoint(externalRealPoints[1]))
+                if (oldRealLines[0].doesLineContainPoint(externalRealPoints[1]) && false)
                 {//line 0 contains line 1
                     Debug.LogWarning("found line containing other");
                     newLine = oldLines[0];
                     removedLine = removedLine || shape.removeLine(oldLines[1]);
                 }
-                else if (oldRealLines[1].doesLineContainPoint(externalRealPoints[0]))
+                else if (oldRealLines[1].doesLineContainPoint(externalRealPoints[0]) && false)
                 {//line 1 contains line 0
                     Debug.LogWarning("found line containing other");
                     newLine = oldLines[1];

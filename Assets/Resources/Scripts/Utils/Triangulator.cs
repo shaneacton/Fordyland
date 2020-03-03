@@ -32,7 +32,7 @@ public class Triangulator: ShapeOperator
 
     private void triangulateFace(Face face)
     {
-        HashSet<IndexTriangle> newTriangles = face.getTriangles();
+        HashSet<IndexTriangle> newTriangles = face.walk.getTriangles();
         foreach (IndexTriangle triangle in newTriangles)
         {
             if (shape.triangles.Contains(triangle)) {
@@ -82,8 +82,18 @@ public class Triangulator: ShapeOperator
                     if (faceAccountedFor) continue;
 
                     face.findLines(otherLine.line, lineIntersections, shape, debug: debug);
-                    face.calculateOrderedVerts(shape, lineIntersections ,debug: debug);
-
+                    face.fillLines();
+                    bool faceCollectionSuccessful;
+                    //try
+                    //{
+                        Walk enclosingWalk = Walks.getEnclosingwalk(shape, face, lineIntersections);
+                        face.walk = enclosingWalk;
+                        faceCollectionSuccessful = true;
+                    //}
+                    //catch (Exception e) {
+                    //    Debug.LogError(e.ToString());
+                    //    faceCollectionSuccessful = false;
+                    //}
                     if (!normals.ContainsKey(face.normal))
                     {
                         //Debug.Log("found new face normal: " + face.normal);
@@ -94,7 +104,10 @@ public class Triangulator: ShapeOperator
                     }
                     
                     normals[face.normal].Add(face);
-                    faces.Add(face);
+                    if (faceCollectionSuccessful)
+                    {
+                        faces.Add(face);
+                    }
                     //Debug.Log("found face: " + face);
                 }
             }

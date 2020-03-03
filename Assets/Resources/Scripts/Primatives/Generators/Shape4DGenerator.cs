@@ -12,7 +12,7 @@ public class Shape4DGenerator : MonoBehaviour
     public float q;
 
     protected Shape4D generatedShape;
-    protected Dictionary<Vector4, int> indexMap;
+    public Dictionary<Vector4, int> indexMap;
     int nextIndex;
 
     public Shape4D getShape()
@@ -33,7 +33,7 @@ public class Shape4DGenerator : MonoBehaviour
         nextIndex = 0;
     }
 
-    protected void addVert(Vector4 vert) {
+    public void addVert(Vector4 vert) {
         if (!indexMap.ContainsKey(vert)) {
             //Debug.Log("registering vert " + vert + " with " + nextIndex);
             indexMap.Add(vert, nextIndex);
@@ -52,4 +52,16 @@ public class Shape4DGenerator : MonoBehaviour
         throw new Exception();
     }
 
+    internal void addTriangles(IEnumerable<IndexTriangle> triangles)
+    {
+        foreach (IndexTriangle tri in triangles)
+        {
+            generatedShape.triangles.Add(tri);
+        }
+    }
+
+    internal void addTriangle(IndexTriangle indexTriangle)
+    {
+        generatedShape.triangles.Add(indexTriangle);
+    }
 }

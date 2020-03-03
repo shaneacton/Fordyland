@@ -5,9 +5,9 @@ using UnityEngine;
 
 public abstract class Vector : VectorImpl
 {
-    public static float equalityTolerance = 0.0001f;//0.001
+    public static float equalityTolerance = 0.01f;//0.001//0.0001
     public static float normalEqualityTolerance = 0.1f;
-    public static float parallelTolerance = 0.992f;
+    public static float parallelTolerance = 0.992f;//0.992
 
     public abstract Vector getRounded(float quanta);
     public abstract float mag();
@@ -48,6 +48,8 @@ public abstract class Vector : VectorImpl
         }
         return upper;
     }
+
+    internal abstract float dot(Vector u);
 
     public float this[int index]
     {

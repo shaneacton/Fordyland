@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-class LinePoint
+public class LinePoint
 {
     public IndexLine line;
     public int index;
@@ -67,17 +67,26 @@ class LinePoint
     }
     public int getNumIntersectionsAtOtherPoint(Dictionary<int, HashSet<LinePoint>> lineIntersections)
     {
+        if (!lineIntersections[getOtherPoint()].Contains(getOppositeLinePoint())) { throw new Exception("line intersections does not contain the returning linepoint to" + this + " cannot find num neighbours"); }
         return getNumIntersectionsAtIndex(lineIntersections, 1);
     }
 
     private int getNumIntersectionsAtIndex(Dictionary<int, HashSet<LinePoint>> lineIntersections, int index) {
         int vertId = this[index];
-        if (!lineIntersections[vertId].Contains(this)) { throw new Exception("line intersections does not contain this linepoint " + this + " cannot find num neighbours"); }
         return lineIntersections[vertId].Count;
     }
 
     internal LinePoint getOppositeLinePoint()
     {
         return new LinePoint(line, 1 - index);
+    }
+
+    internal int getNumIntersectionsAtOtherPointInLines(Dictionary<int, HashSet<LinePoint>> lineIntersections, HashSet<IndexLine> lines)
+    {
+        int count = 0;
+        foreach (LinePoint lp in lineIntersections[getOtherPoint()]) {
+            if (lines.Contains(lp.line)) { count++; }
+        }
+        return count;
     }
 }

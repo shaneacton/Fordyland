@@ -62,6 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Debug\DebugImage.cs" />
     <Compile Include="Assets\OutlineToolkit\Script\Demonstration_MeshProcessing.cs" />
     <Compile Include="Assets\OutlineToolkit\Script\Demonstration_NoclipController.cs" />
     <Compile Include="Assets\OutlineToolkit\Script\EdgeDetect.cs" />
@@ -69,9 +70,11 @@
     <Compile Include="Assets\Resources\Scripts\Entities\Entity.cs" />
     <Compile Include="Assets\Resources\Scripts\Player\Player.cs" />
     <Compile Include="Assets\Resources\Scripts\Player\PlayerController.cs" />
+    <Compile Include="Assets\Resources\Scripts\Primatives\Generators\Blob.cs" />
     <Compile Include="Assets\Resources\Scripts\Primatives\Generators\HyperCube.cs" />
     <Compile Include="Assets\Resources\Scripts\Primatives\Generators\HyperRectangle.cs" />
     <Compile Include="Assets\Resources\Scripts\Primatives\Generators\OneWayShrinkingHyperRectangle.cs" />
+    <Compile Include="Assets\Resources\Scripts\Primatives\Generators\Path4.cs" />
     <Compile Include="Assets\Resources\Scripts\Primatives\Generators\Shape4DGenerator.cs" />
     <Compile Include="Assets\Resources\Scripts\Primatives\Lines\IndexLine.cs" />
     <Compile Include="Assets\Resources\Scripts\Primatives\Lines\Line2.cs" />
@@ -99,6 +102,8 @@
     <Compile Include="Assets\Resources\Scripts\Utils\ShapeSimplifier.cs" />
     <Compile Include="Assets\Resources\Scripts\Utils\Triangulator.cs" />
     <Compile Include="Assets\Resources\Scripts\Utils\Visualiser.cs" />
+    <Compile Include="Assets\Resources\Scripts\Utils\Walk.cs" />
+    <Compile Include="Assets\Resources\Scripts\Utils\Walks.cs" />
     <None Include="Assets\OutlineToolkit\Shader\NamedStandard.shader" />
     <None Include="Assets\OutlineToolkit\Shader\StandardSurfaceOutlined.shader" />
     <None Include="Assets\OutlineToolkit\Happy Flower\happy flower care instructions.txt" />
